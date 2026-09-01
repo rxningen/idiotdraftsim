@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Draft Room — 14-Team Half-PPR Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,6 +177,19 @@ tr.mine-row td{background:rgba(255,201,77,0.07);}
 .pred-row .pct{width:100px;flex:none;font-size:13.5px;color:var(--ink-dim);font-family:var(--font-mono);text-align:right;}
 .confirm-armed{border-color:var(--danger) !important;color:var(--danger) !important;}
 
+.clock-banner{background:rgba(255,201,77,0.09);border:1px solid rgba(255,201,77,0.32);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+.clock-banner.ai{background:var(--panel2);border-color:var(--line2);}
+.clock-banner .big{font-family:var(--font-display);font-size:20px;text-transform:uppercase;letter-spacing:0.05em;color:var(--gold);font-weight:600;}
+.clock-banner.ai .big{color:var(--ink-dim);}
+.clock-banner .meta{font-family:var(--font-mono);font-size:13px;color:var(--ink-dim);margin-top:3px;}
+.avail-scroll{max-height:420px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
+.avail-scroll table{margin:0;}
+.draft-btn{padding:5px 13px;font-size:12.5px;}
+.hist-scroll{max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
+.hist-scroll table{margin:0;}
+tr.hist-me td{background:rgba(255,201,77,0.08);}
+.rd-divider td{background:var(--panel2);color:var(--ink-dim);font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;padding:5px 10px;}
+
 .plink{cursor:pointer;border-bottom:1px dotted var(--accent-dim);}
 .plink:hover{color:var(--accent);}
 .modal-overlay{position:fixed;inset:0;background:rgba(4,6,10,0.72);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(3px);}
@@ -189,12 +202,101 @@ tr.mine-row td{background:rgba(255,201,77,0.07);}
 .modal .close-x:hover{color:var(--ink);}
 .proj-tag{display:inline-block;background:var(--turf);color:#0a0e14;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:0.06em;}
 
+/* ---------- Tablet ---------- */
+@media (max-width:900px){
+  .wrap{padding:26px 18px 70px;}
+  .row{gap:16px;}
+  .row > .card{min-width:100%;}
+  .team-cards{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
+}
+
+/* ---------- Phone ---------- */
 @media (max-width:640px){
-  .wrap{padding:22px 14px 60px;}
-  .masthead h1{font-size:34px;}
-  .card{padding:18px 16px;}
-  .runbar .field{min-width:110px;flex:1;}
-  .pred-row .pname{width:130px;}
+  html{-webkit-text-size-adjust:100%;}
+  .wrap{padding:18px 12px 64px;}
+
+  .masthead{padding-bottom:16px;margin-bottom:18px;gap:10px;}
+  .masthead h1{font-size:32px;}
+  .masthead .sub{font-size:11.5px;letter-spacing:0.1em;}
+  .masthead .runstat{font-size:12.5px;padding:8px 12px;width:100%;}
+
+  /* Tabs: horizontal swipe strip instead of wrapping into 3 rows */
+  .tabs{
+    flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;margin:0 -12px 20px;padding:0 12px;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{flex:0 0 auto;padding:12px 14px;font-size:13.5px;letter-spacing:0.05em;}
+
+  .card{padding:16px 14px;margin-bottom:14px;border-radius:10px;}
+  .card h2{font-size:14px;margin-bottom:14px;}
+
+  /* Inputs: 16px min stops iOS auto-zoom on focus */
+  input[type=number],input[type=text],select,textarea{font-size:16px;padding:11px 12px;}
+  label{font-size:13px;}
+  .field{margin-bottom:14px;}
+  .field-row{gap:10px;}
+  .field-row > .field{min-width:100%;}
+
+  /* Buttons: full-width stacked, comfortable tap targets */
+  button{padding:13px 16px;font-size:14px;width:100%;}
+  button.small,.chip button,.draft-btn{width:auto;}
+  .runbar{gap:10px;}
+  .runbar .field,.runbar > div{min-width:100%;flex:1 1 100%;}
+  .runbar button{width:100%;}
+  .view-toggle{flex-direction:column;gap:6px;}
+  .view-toggle button{border-radius:8px !important;}
+
+  /* Tables scroll horizontally rather than squashing */
+  .board-wrap,.pool-scroll,.hist-scroll,.avail-scroll,
+  #gradesBody > div,#liveGrades > div,#statsBody > div{
+    -webkit-overflow-scrolling:touch;
+  }
+  table{font-size:13.5px;}
+  th{font-size:11px;padding:8px;}
+  td{padding:8px;}
+  .pool-scroll{max-height:380px;}
+  .avail-scroll{max-height:340px;}
+  .hist-scroll{max-height:300px;}
+
+  /* Draft board grid stays scrollable with a sticky round column */
+  .board td{min-width:112px;}
+  .board .rd-label{position:sticky;left:0;z-index:2;}
+  .board th:first-child{position:sticky;left:0;z-index:3;}
+
+  /* Team cards: single column, easiest board view on a phone */
+  .team-cards{grid-template-columns:1fr;gap:10px;}
+
+  /* Predictor bars */
+  .pred-row{flex-wrap:wrap;gap:6px;}
+  .pred-row .pname{width:100%;font-size:13.5px;}
+  .pred-row .bar-track{flex:1 1 60%;height:14px;}
+  .pred-row .pct{width:auto;flex:0 0 auto;}
+
+  .slider-row{gap:8px;}
+  .slider-row label{width:42px;font-size:13px;}
+  .slider-row .val{width:52px;}
+  input[type=range]{height:28px;}
+
+  .clock-banner{padding:12px 13px;}
+  .clock-banner .big{font-size:17px;}
+  .clock-banner .meta{font-size:12px;}
+
+  /* Modal fills more of the screen */
+  .modal-overlay{padding:10px;align-items:flex-end;}
+  .modal{max-height:88vh;border-radius:14px 14px 0 0;padding:20px 16px;}
+  .modal h3{font-size:19px;}
+
+  .legend{gap:10px;font-size:12px;}
+  .hint{font-size:13px;}
+  .chip{font-size:13px;}
+}
+
+/* Very narrow phones */
+@media (max-width:380px){
+  .masthead h1{font-size:27px;}
+  .card{padding:14px 12px;}
+  .board td{min-width:104px;}
 }
 </style>
 </head>
@@ -214,6 +316,7 @@ tr.mine-row td{background:rgba(255,201,77,0.07);}
     <button class="tab-btn" data-tab="board">Draft board</button>
     <button class="tab-btn" data-tab="myteam">My team</button>
     <button class="tab-btn" data-tab="predictor">Predictor</button>
+    <button class="tab-btn" data-tab="live">Live draft</button>
     <button class="tab-btn" data-tab="grades">Draft grades</button>
     <button class="tab-btn" data-tab="bias">Bias settings</button>
     <button class="tab-btn" data-tab="pool">Player pool</button>
@@ -339,6 +442,117 @@ tr.mine-row td{background:rgba(255,201,77,0.07);}
         </div>
       </div>
       <div id="predictorBody"><div class="empty">Run some simulations to see predictions.</div></div>
+    </div>
+  </div>
+
+  <!-- LIVE DRAFT -->
+  <div class="panel" id="tab-live">
+    <div class="card">
+      <h2>Live mock draft</h2>
+      <p class="hint" style="margin-top:-6px;">Draft for real, pick by pick. The AI drafts for every other team using your current rankings, bias, and chaos settings; when it's your turn, you choose. Uses your selected team slot and league settings.</p>
+      <div class="runbar" style="margin-bottom:14px;">
+        <div class="field" style="min-width:180px;margin-bottom:0;">
+          <label>My team slot</label>
+          <select id="liveTeamSel" style="border-color:rgba(255,201,77,0.5);color:var(--gold);font-weight:600;"></select>
+        </div>
+        <div class="field" style="min-width:150px;margin-bottom:0;">
+          <label>Draft position</label>
+          <div class="val" id="liveSlotInfo" style="padding-top:11px;">&mdash;</div>
+        </div>
+        <div class="field" style="min-width:210px;margin-bottom:0;">
+          <label>AI randomness</label>
+          <select id="liveChaosMode">
+            <option value="chaos">Use chaos setting (realistic)</option>
+            <option value="strict">No chaos — strict rank order</option>
+          </select>
+        </div>
+      </div>
+      <div class="runbar" style="margin-bottom:8px;">
+        <button class="primary" id="liveStartBtn">Start / restart draft</button>
+        <button id="liveAdvanceBtn">Advance to my next pick</button>
+        <button id="liveRoundBtn">Finish this round</button>
+        <button id="liveAutoMeBtn">Auto-pick for me</button>
+        <button id="liveFinishBtn">Auto-complete draft</button>
+        <button class="danger" id="liveUndoBtn">Undo last pick</button>
+      </div>
+      <div class="hint" id="liveChaosNote" style="margin-top:4px;"></div>
+      <div class="status-msg" id="liveStatus"></div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:1.15;">
+        <h2 id="liveOnClockHdr">On the clock</h2>
+        <div id="liveOnClock"><div class="empty">Click "Start / restart draft" to begin.</div></div>
+      </div>
+      <div class="card">
+        <h2>My roster</h2>
+        <div id="liveMyRoster"><div class="empty">No picks yet.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pick history</h2>
+      <div id="liveHistory"><div class="empty">No picks yet.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Draft results &amp; grades</h2>
+      <div id="liveGrades"><div class="empty">Complete the draft to see grades for every team.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Player status &mdash; injuries &amp; suspensions</h2>
+      <p class="hint" style="margin-top:-6px;">Mark players as questionable, out, on IR, or suspended. Status reduces a player&#39;s draft value and season projection, so AI teams avoid them and grades reflect it. Statuses apply everywhere in the app.</p>
+      <div class="field-row" style="align-items:flex-end;">
+        <div class="field" style="min-width:220px;">
+          <label>Player</label>
+          <input type="text" id="statusPlayerInput" placeholder="Start typing a name..." list="statusPlayerList">
+          <datalist id="statusPlayerList"></datalist>
+        </div>
+        <div class="field" style="min-width:170px;">
+          <label>Status</label>
+          <select id="statusPicker">
+            <option value="">Healthy (clear)</option>
+            <option value="Q">Questionable</option>
+            <option value="D">Doubtful</option>
+            <option value="O">Out (short-term)</option>
+            <option value="IR">Injured reserve</option>
+            <option value="SUS">Suspended</option>
+            <option value="PUP">PUP / NFI</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:120px;flex:none;">
+          <button class="primary" id="statusApplyBtn">Apply status</button>
+        </div>
+        <div class="field" style="min-width:120px;flex:none;">
+          <button class="danger" id="statusClearAllBtn">Clear all</button>
+        </div>
+      </div>
+      <div class="status-msg" id="statusMsg"></div>
+      <h3>Bulk update</h3>
+      <p class="hint" style="margin-top:-4px;">Paste one per line as <code>Player Name, STATUS</code> (STATUS = Q, D, O, IR, SUS, or PUP). Copy from any injury report.</p>
+      <textarea id="statusBulk" rows="4" placeholder="Christian McCaffrey, Q&#10;Rashee Rice, SUS&#10;Chris Godwin Jr., IR"></textarea>
+      <div style="margin-top:8px;">
+        <button id="statusBulkBtn">Import status list</button>
+      </div>
+      <h3>Auto-update from ESPN</h3>
+      <p class="hint" style="margin-top:-4px;">Pulls current injury designations straight from ESPN&#39;s public API (32 requests, one per NFL team). Runs in your browser &mdash; no account or key needed.</p>
+      <div class="field" style="max-width:320px;">
+        <label>Connection method</label>
+        <select id="espnMode">
+          <option value="auto">Auto (direct, fall back to proxy)</option>
+          <option value="direct">Direct to ESPN only</option>
+          <option value="proxy">Via public CORS proxy</option>
+        </select>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="primary" id="espnFetchBtn">Fetch injuries from ESPN</button>
+        <button id="espnTestBtn">Test connection</button>
+        <button id="espnClearBtn">Clear ESPN-sourced only</button>
+      </div>
+      <div class="status-msg" id="espnMsg"></div>
+      <h3>Active statuses</h3>
+      <div id="statusList"><span class="hint">None set &mdash; all players treated as healthy.</span></div>
     </div>
   </div>
 
@@ -963,6 +1177,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     if(btn.dataset.tab==='myteam') renderMyTeam();
     if(btn.dataset.tab==='predictor') renderPredictor();
     if(btn.dataset.tab==='grades') renderGrades();
+    if(btn.dataset.tab==='live') renderLive();
   });
 });
 
@@ -971,13 +1186,16 @@ function refreshTeamSelectors(){
   const myTeamSel = document.getElementById('myTeamSel');
   const teamBiasTeam = document.getElementById('teamBiasTeam');
   const predTeamSel = document.getElementById('predTeamSel');
-  [myTeamSel, teamBiasTeam, predTeamSel].forEach(sel=>sel.innerHTML='');
+  const liveTeamSel = document.getElementById('liveTeamSel');
+  [myTeamSel, teamBiasTeam, predTeamSel, liveTeamSel].forEach(sel=>sel.innerHTML='');
   for(let i=1;i<=state.numTeams;i++){
     const label = 'Team '+i+(i===state.myTeam?' (you)':'');
     myTeamSel.insertAdjacentHTML('beforeend', `<option value="${i}" ${i===state.myTeam?'selected':''}>${label}</option>`);
     teamBiasTeam.insertAdjacentHTML('beforeend', `<option value="${i}">Team ${i}</option>`);
     predTeamSel.insertAdjacentHTML('beforeend', `<option value="${i}" ${i===state.myTeam?'selected':''}>${label}</option>`);
+    liveTeamSel.insertAdjacentHTML('beforeend', `<option value="${i}" ${i===state.myTeam?'selected':''}>${label}</option>`);
   }
+  updateLiveSlotInfo();
   updateYouAreHint();
 }
 function updateYouAreHint(){
@@ -985,6 +1203,8 @@ function updateYouAreHint(){
 }
 document.getElementById('myTeamSel').addEventListener('change', e=>{
   state.myTeam=+e.target.value;
+  document.getElementById('liveTeamSel').value=state.myTeam;
+  updateLiveSlotInfo();
   updateYouAreHint();
   renderMyTeam(); renderAggregate(); renderBoard();
 });
@@ -992,7 +1212,7 @@ document.getElementById('predTeamSel').addEventListener('change', renderPredicto
 
 // ---------- Chaos slider ----------
 const chaosSlider=document.getElementById('chaosSlider'), chaosVal=document.getElementById('chaosVal');
-chaosSlider.addEventListener('input', ()=>{ state.chaos=+chaosSlider.value; chaosVal.textContent=Math.round(state.chaos*100)+'%'; });
+chaosSlider.addEventListener('input', ()=>{ state.chaos=+chaosSlider.value; chaosVal.textContent=Math.round(state.chaos*100)+'%'; if(typeof updateLiveChaosNote==='function') updateLiveChaosNote(); });
 
 // ---------- League bias sliders ----------
 const POSITIONS=['QB','RB','WR','TE','K','DST'];
@@ -1260,7 +1480,7 @@ function computePositionMultipliers(team, round, caps){
 }
 
 function buildTemplatePool(){
-  const pool = ensurePoolDepth(state.players.map(p=>({...p, base:Math.max(1,1000-p.rank)})), totalRounds());
+  const pool = ensurePoolDepth(state.players.map(p=>({...p, base:Math.max(1,1000-p.rank)*statusMult(p.name)})), totalRounds());
   pool.sort((a,b)=>b.base-a.base);
   return pool;
 }
@@ -1424,7 +1644,9 @@ function sampleWarning(n){
 }
 
 // ---------- Board rendering (most-likely pick per team/round, aggregated across all runs) ----------
-let boardViewMode='grid';
+const isPhone = (typeof window!=='undefined' && window.matchMedia)
+  ? window.matchMedia('(max-width:640px)').matches : false;
+let boardViewMode = isPhone ? 'cards' : 'grid';
 let lastSample=null;
 function setBoardMode(mode, btn){
   boardViewMode=mode;
@@ -1711,6 +1933,9 @@ function renderPredictor(){
 
 // ---------- Draft grades & season projection ----------
 function projSeasonPoints(name, pos, rank){
+  return rawProjSeasonPoints(name,pos,rank)*statusMult(name);
+}
+function rawProjSeasonPoints(name, pos, rank){
   const key=normName(name);
   const seasons=STATS_LOOKUP[key];
   if(seasons && seasons.length){
@@ -1928,8 +2153,753 @@ function renderGrades(){
   body.innerHTML=html;
 }
 
+// ---------- Player status (injuries / suspensions) ----------
+const STATUS_META = {
+  'Q':  {label:'Questionable',    mult:0.93, color:'var(--gold)'},
+  'D':  {label:'Doubtful',        mult:0.80, color:'var(--gold)'},
+  'O':  {label:'Out',             mult:0.68, color:'var(--danger)'},
+  'IR': {label:'Injured reserve', mult:0.25, color:'var(--danger)'},
+  'SUS':{label:'Suspended',       mult:0.45, color:'var(--danger)'},
+  'PUP':{label:'PUP / NFI',       mult:0.55, color:'var(--danger)'}
+};
+let playerStatus = {};   // normName -> code
+
+function statusOf(name){ return playerStatus[normName(name)] || null; }
+function statusMult(name){
+  const c=statusOf(name);
+  return c && STATUS_META[c] ? STATUS_META[c].mult : 1;
+}
+function statusBadge(name){
+  const c=statusOf(name);
+  if(!c) return '';
+  const m=STATUS_META[c];
+  return ` <span style="color:${m.color};font-family:var(--font-mono);font-size:11.5px;font-weight:600;">[${c}]</span>`;
+}
+function setStatus(name, code){
+  const k=normName(name);
+  if(!code) delete playerStatus[k];
+  else playerStatus[k]=code;
+}
+function refreshStatusDatalist(){
+  const dl=document.getElementById('statusPlayerList');
+  if(!dl) return;
+  dl.innerHTML=state.players.slice().sort((a,b)=>a.rank-b.rank).slice(0,300)
+    .map(p=>`<option value="${p.name.replace(/"/g,'&quot;')}">`).join('');
+}
+function renderStatusList(){
+  const el=document.getElementById('statusList');
+  if(!el) return;
+  const keys=Object.keys(playerStatus);
+  if(!keys.length){ el.innerHTML='<span class="hint">None set &mdash; all players treated as healthy.</span>'; return; }
+  const byName={};
+  state.players.forEach(p=>{ byName[normName(p.name)]=p.name; });
+  el.innerHTML=keys.map(k=>{
+    const code=playerStatus[k];
+    const m=STATUS_META[code];
+    const disp=byName[k]||k;
+    return `<span class="chip"><span style="color:${m.color};font-weight:600;">${code}</span> ${disp} <button class="small" data-clearstatus="${k}">&times;</button></span>`;
+  }).join('');
+  el.querySelectorAll('[data-clearstatus]').forEach(b=>{
+    b.addEventListener('click', ()=>{ delete playerStatus[b.dataset.clearstatus]; afterStatusChange(); });
+  });
+}
+function afterStatusChange(){
+  renderStatusList();
+  if(live) renderLive();
+  renderPool();
+  if(document.getElementById('tab-grades').classList.contains('active')) renderGrades();
+}
+document.getElementById('statusApplyBtn').addEventListener('click', ()=>{
+  const name=document.getElementById('statusPlayerInput').value.trim();
+  const code=document.getElementById('statusPicker').value;
+  if(!name){ document.getElementById('statusMsg').textContent='Enter a player name first.'; return; }
+  const match=state.players.find(p=>normName(p.name)===normName(name));
+  setStatus(name, code);
+  document.getElementById('statusMsg').textContent = code
+    ? (match?match.name:name)+' marked '+STATUS_META[code].label+'.'
+    : (match?match.name:name)+' cleared to healthy.';
+  if(!match) document.getElementById('statusMsg').textContent+=' (Name not in your pool — check spelling.)';
+  document.getElementById('statusPlayerInput').value='';
+  afterStatusChange();
+});
+document.getElementById('statusClearAllBtn').addEventListener('click', ()=>{
+  playerStatus={};
+  document.getElementById('statusMsg').textContent='All statuses cleared.';
+  afterStatusChange();
+});
+document.getElementById('statusBulkBtn').addEventListener('click', ()=>{
+  const txt=document.getElementById('statusBulk').value.trim();
+  if(!txt) return;
+  let applied=0, unknown=[];
+  txt.split('\n').forEach(line=>{
+    const parts=line.split(',').map(s=>s.trim());
+    if(parts.length<2) return;
+    const code=parts[1].toUpperCase();
+    if(!STATUS_META[code]) return;
+    setStatus(parts[0], code);
+    applied++;
+    if(!state.players.some(p=>normName(p.name)===normName(parts[0]))) unknown.push(parts[0]);
+  });
+  document.getElementById('statusMsg').textContent='Applied '+applied+' status update'+(applied===1?'':'s')+'.'
+    +(unknown.length?' Not found in pool: '+unknown.join(', '):'');
+  document.getElementById('statusBulk').value='';
+  afterStatusChange();
+});
+// ---------- ESPN injury sync ----------
+// Uses ESPN's public (undocumented) JSON API. Team roster payloads embed each
+// athlete's current injury designation, so 32 requests cover the league.
+const ESPN_STATUS_MAP = [
+  [/injured reserve|^ir$/i,            'IR'],
+  [/physically unable|^pup$|non.?football/i, 'PUP'],
+  [/suspend/i,                          'SUS'],
+  [/^out$/i,                            'O'],
+  [/doubtful/i,                         'D'],
+  [/questionable/i,                     'Q'],
+  [/probable|day.to.day/i,              'Q']
+];
+function mapEspnStatus(txt){
+  if(!txt) return null;
+  for(const [re,code] of ESPN_STATUS_MAP){ if(re.test(txt)) return code; }
+  return null;
+}
+let espnSourced = {};   // normName -> true, so we can clear just these
+
+const ESPN_BASE='https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/';
+const CORS_PROXIES=[
+  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+  u=>'https://corsproxy.io/?'+encodeURIComponent(u)
+];
+
+async function espnGet(teamId, mode, proxyIdx){
+  const url=ESPN_BASE+teamId+'/roster';
+  const target = mode==='direct' ? url : CORS_PROXIES[proxyIdx](url);
+  const res=await fetch(target, {mode:'cors'});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res.json();
+}
+
+// Figure out which transport actually works before hammering 32 endpoints.
+async function espnProbe(mode){
+  const attempts=[];
+  if(mode==='auto'||mode==='direct') attempts.push({kind:'direct', idx:-1});
+  if(mode==='auto'||mode==='proxy'){
+    CORS_PROXIES.forEach((_,i)=>attempts.push({kind:'proxy', idx:i}));
+  }
+  const errors=[];
+  for(const a of attempts){
+    try{
+      const data=await espnGet(1, a.kind==='direct'?'direct':'proxy', a.idx);
+      if(data && data.athletes) return {ok:true, ...a};
+      errors.push(a.kind+(a.idx>=0?' #'+(a.idx+1):'')+': unexpected response shape');
+    }catch(e){
+      errors.push(a.kind+(a.idx>=0?' #'+(a.idx+1):'')+': '+e.message);
+    }
+  }
+  return {ok:false, errors};
+}
+
+function espnDiagnosis(errors){
+  const sandboxed = (window.location.protocol==='blob:' || window.location.protocol==='about:'
+    || (window.self!==window.top));
+  let msg='<b>Could not reach ESPN.</b><br>Tried: '+errors.join(' &middot; ')+'<br><br>';
+  if(sandboxed){
+    msg+='This page appears to be running inside a preview frame, which blocks outside network requests. '
+      +'Download the file and open it directly in your browser, or use your hosted Render site &mdash; the fetch works normally there.';
+  } else if(window.location.protocol==='file:'){
+    msg+='You opened this as a local file. Some browsers block network requests from <code>file://</code> pages. '
+      +'Try your hosted Render site instead.';
+  } else {
+    msg+='Your network, VPN, ad-blocker, or a browser extension may be blocking the request. '
+      +'Try disabling extensions for this page, or set statuses manually above using '
+      +'<a href="https://www.espn.com/nfl/injuries" target="_blank" rel="noopener" style="color:var(--accent);">ESPN&#39;s injury page</a>.';
+  }
+  return msg;
+}
+
+document.getElementById('espnTestBtn').addEventListener('click', async ()=>{
+  const msg=document.getElementById('espnMsg');
+  const mode=document.getElementById('espnMode').value;
+  msg.classList.remove('warn');
+  msg.textContent='Testing connection…';
+  const probe=await espnProbe(mode);
+  if(probe.ok){
+    msg.textContent='Connection works via '+(probe.kind==='direct'?'a direct request to ESPN':'CORS proxy #'+(probe.idx+1))+'. Click "Fetch injuries from ESPN" to sync.';
+  } else {
+    msg.classList.add('warn');
+    msg.innerHTML=espnDiagnosis(probe.errors);
+  }
+});
+
+async function fetchEspnInjuries(){
+  const btn=document.getElementById('espnFetchBtn');
+  const msg=document.getElementById('espnMsg');
+  const mode=document.getElementById('espnMode').value;
+  btn.disabled=true;
+  msg.classList.remove('warn');
+  msg.textContent='Testing connection…';
+
+  const probe=await espnProbe(mode);
+  if(!probe.ok){
+    btn.disabled=false;
+    msg.classList.add('warn');
+    msg.innerHTML=espnDiagnosis(probe.errors);
+    return;
+  }
+  const via = probe.kind==='direct' ? 'direct' : 'proxy';
+  msg.textContent='Connected via '+(via==='direct'?'ESPN directly':'CORS proxy #'+(probe.idx+1))+'. Fetching…';
+
+  const found={};
+  let ok=0, failed=0;
+  for(let teamId=1; teamId<=32; teamId++){
+    try{
+      const data=await espnGet(teamId, via, probe.idx);
+      (data.athletes||[]).forEach(group=>{
+        (group.items||[]).forEach(a=>{
+          const name=a.fullName||a.displayName;
+          if(!name) return;
+          let code=null;
+          if(Array.isArray(a.injuries)){
+            for(const inj of a.injuries){
+              code=mapEspnStatus(inj.status||inj.type||'') || code;
+              if(code) break;
+            }
+          }
+          if(!code && a.status && a.status.name) code=mapEspnStatus(a.status.name);
+          if(code) found[normName(name)]={code, name};
+        });
+      });
+      ok++;
+    }catch(e){ failed++; }
+    msg.textContent='Fetching… '+teamId+'/32 teams ('+Object.keys(found).length+' designations found)';
+  }
+  btn.disabled=false;
+
+  if(ok===0){
+    msg.classList.add('warn');
+    msg.innerHTML=espnDiagnosis(['all 32 team requests failed']);
+    return;
+  }
+
+  const inPool=new Set(state.players.map(p=>normName(p.name)));
+  let applied=0, ignored=0;
+  Object.keys(espnSourced).forEach(k=>{ delete playerStatus[k]; });
+  espnSourced={};
+  Object.keys(found).forEach(k=>{
+    if(!inPool.has(k)){ ignored++; return; }
+    playerStatus[k]=found[k].code;
+    espnSourced[k]=true;
+    applied++;
+  });
+  const stamp=new Date().toLocaleString();
+  msg.textContent='Updated '+applied+' player'+(applied===1?'':'s')+' in your pool from ESPN'
+    +(ignored?' ('+ignored+' flagged players not in your rankings)':'')
+    +(failed?' — '+failed+' team request'+(failed===1?'':'s')+' failed':'')
+    +'. Synced '+stamp+' via '+(via==='direct'?'direct connection':'proxy')+'.';
+  afterStatusChange();
+}
+document.getElementById('espnFetchBtn').addEventListener('click', fetchEspnInjuries);
+document.getElementById('espnClearBtn').addEventListener('click', ()=>{
+  let n=0;
+  Object.keys(espnSourced).forEach(k=>{ if(playerStatus[k]){ delete playerStatus[k]; n++; } });
+  espnSourced={};
+  document.getElementById('espnMsg').textContent='Cleared '+n+' ESPN-sourced status'+(n===1?'':'es')+'. Manual entries kept.';
+  afterStatusChange();
+});
+
+// ---------- Live mock draft ----------
+let live=null;
+
+function liveInit(){
+  const rounds=totalRounds();
+  live={
+    rounds, numTeams:state.numTeams,
+    order:draftOrder(state.numTeams, rounds),
+    pool:buildTemplatePool(),
+    teams:Array.from({length:state.numTeams},(_,i)=>({id:i+1, counts:{}, lastPos:null, streak:0})),
+    picks:[], idx:0,
+    caps:computeHardCaps(state.roster),
+    search:'', posFilter:'', editIdx:null
+  };
+}
+function liveTotalPicks(){ return live.rounds*live.numTeams; }
+function liveCurrent(){
+  if(!live || live.idx>=liveTotalPicks()) return null;
+  const r=Math.floor(live.idx/live.numTeams);
+  const slot=live.idx%live.numTeams;
+  return {round:r+1, teamId:live.order[r][slot], overallPick:live.idx+1};
+}
+function liveCommit(player){
+  const cur=liveCurrent();
+  if(!cur) return false;
+  const team=live.teams[cur.teamId-1];
+  const pi=live.pool.findIndex(p=>p.id===player.id);
+  if(pi<0) return false;
+  live.pool.splice(pi,1);
+  team.counts[player.pos]=(team.counts[player.pos]||0)+1;
+  const prevLast=team.lastPos, prevStreak=team.streak;
+  if(player.pos===team.lastPos){ team.streak++; } else { team.lastPos=player.pos; team.streak=1; }
+  live.picks.push({...cur, player, manual:cur.teamId===state.myTeam, prevLast, prevStreak});
+  live.idx++;
+  return true;
+}
+function liveChaos(){
+  const sel=document.getElementById('liveChaosMode');
+  return (sel && sel.value==='strict') ? 0 : state.chaos;
+}
+function liveAIPick(){
+  const cur=liveCurrent();
+  if(!cur) return false;
+  const team=live.teams[cur.teamId-1];
+  const posMult=computePositionMultipliers(team, cur.round, live.caps);
+  const chaos=liveChaos();
+  let bestIdx=-1, bestVal=0;
+  const limit=Math.min(70, live.pool.length);
+  for(let i=0;i<limit;i++){
+    const p=live.pool[i];
+    const m=posMult[p.pos];
+    if(m<=0) continue;
+    const val=p.base*(1+(Math.random()*2-1)*chaos)*m;
+    if(val>bestVal){ bestVal=val; bestIdx=i; }
+  }
+  if(bestIdx<0){
+    for(let i=limit;i<live.pool.length;i++){
+      const p=live.pool[i];
+      const m=posMult[p.pos];
+      if(m<=0) continue;
+      const val=p.base*(1+(Math.random()*2-1)*chaos)*m;
+      if(val>bestVal){ bestVal=val; bestIdx=i; }
+    }
+  }
+  if(bestIdx<0) bestIdx=0;
+  return liveCommit(live.pool[bestIdx]);
+}
+function liveRunUntilMe(){
+  let guard=0;
+  while(guard++<2000){
+    const cur=liveCurrent();
+    if(!cur) break;
+    if(cur.teamId===state.myTeam) break;
+    liveAIPick();
+  }
+}
+function liveSetStatus(msg){ document.getElementById('liveStatus').textContent=msg||''; }
+
+document.getElementById('liveStartBtn').addEventListener('click', ()=>{
+  liveInit();
+  liveRunUntilMe();
+  renderLive();
+  liveSetStatus('Draft started — you are Team '+state.myTeam+'.');
+});
+document.getElementById('liveAdvanceBtn').addEventListener('click', ()=>{
+  if(!live){ liveSetStatus('Start a draft first.'); return; }
+  const cur=liveCurrent();
+  if(!cur){ liveSetStatus('Draft is complete.'); return; }
+  if(cur.teamId===state.myTeam){ liveSetStatus('It is already your pick — choose a player below.'); renderLive(); return; }
+  liveRunUntilMe();
+  renderLive();
+  liveSetStatus('Advanced to your pick.');
+});
+document.getElementById('liveRoundBtn').addEventListener('click', ()=>{
+  if(!live){ liveSetStatus('Start a draft first.'); return; }
+  const cur=liveCurrent();
+  if(!cur){ liveSetStatus('Draft is complete.'); return; }
+  const targetRound=cur.round;
+  let guard=0;
+  while(guard++<2000){
+    const c=liveCurrent();
+    if(!c || c.round!==targetRound) break;
+    if(c.teamId===state.myTeam){ liveSetStatus('Stopped — it is your pick in round '+c.round+'.'); break; }
+    liveAIPick();
+  }
+  renderLive();
+  const after=liveCurrent();
+  if(!after) liveSetStatus('Draft complete.');
+  else if(after.round!==targetRound) liveSetStatus('Round '+targetRound+' complete.');
+});
+document.getElementById('liveAutoMeBtn').addEventListener('click', ()=>{
+  if(!live){ liveSetStatus('Start a draft first.'); return; }
+  const cur=liveCurrent();
+  if(!cur){ liveSetStatus('Draft is complete.'); return; }
+  if(cur.teamId!==state.myTeam){ liveSetStatus('Not your pick right now.'); return; }
+  liveAIPick();
+  liveRunUntilMe();
+  renderLive();
+  liveSetStatus('Auto-picked for you.');
+});
+document.getElementById('liveFinishBtn').addEventListener('click', ()=>{
+  if(!live){ liveSetStatus('Start a draft first.'); return; }
+  let guard=0;
+  while(liveCurrent() && guard++<3000) liveAIPick();
+  renderLive();
+  liveSetStatus('Draft auto-completed.');
+});
+document.getElementById('liveUndoBtn').addEventListener('click', ()=>{
+  if(!live || !live.picks.length){ liveSetStatus('Nothing to undo.'); return; }
+  // undo back through AI picks to your previous pick
+  let removed=0;
+  while(live.picks.length){
+    const last=live.picks.pop();
+    const team=live.teams[last.teamId-1];
+    team.counts[last.player.pos]--;
+    team.lastPos=last.prevLast; team.streak=last.prevStreak;
+    live.pool.push(last.player);
+    live.pool.sort((a,b)=>b.base-a.base);
+    live.idx--;
+    removed++;
+    if(last.manual) break;
+  }
+  renderLive();
+  liveSetStatus('Undid '+removed+' pick'+(removed>1?'s':'')+'.');
+});
+
+// Replace an already-made pick. The replacement may be a free agent OR a player
+// another team already drafted — in that case we take them from that team and
+// have the AI re-pick a replacement for whoever lost the player.
+function liveReplacePick(pickIdx, newPlayer){
+  const rec=live.picks[pickIdx];
+  if(!rec) return false;
+  if(rec.player.id===newPlayer.id) return false;
+  const oldPlayer=rec.player;
+  const team=live.teams[rec.teamId-1];
+  let displaced=null;
+
+  const poolIdx=live.pool.findIndex(p=>p.id===newPlayer.id);
+  if(poolIdx>=0){
+    live.pool.splice(poolIdx,1);
+  } else {
+    // newPlayer is already on another team — steal them
+    const otherIdx=live.picks.findIndex(p=>p.player.id===newPlayer.id);
+    if(otherIdx<0) return false;
+    if(otherIdx===pickIdx) return false;
+    displaced=live.picks[otherIdx];
+  }
+
+  // give the old player back to the pool
+  live.pool.push(oldPlayer);
+  rec.player=newPlayer;
+  rec.edited=true;
+
+  if(displaced){
+    // that team now needs a new player for their slot; pick best available for them
+    const dTeam=live.teams[displaced.teamId-1];
+    live.pool.sort((a,b)=>b.base-a.base);
+    const posMult=computePositionMultipliers(dTeam, displaced.round, live.caps);
+    const chaos=liveChaos();
+    let bestIdx=-1,bestVal=0;
+    for(let i=0;i<live.pool.length;i++){
+      const p=live.pool[i];
+      const m=posMult[p.pos];
+      if(m<=0) continue;
+      const val=p.base*(1+(Math.random()*2-1)*chaos)*m;
+      if(val>bestVal){ bestVal=val; bestIdx=i; }
+    }
+    if(bestIdx<0) bestIdx=0;
+    const sub=live.pool[bestIdx];
+    live.pool.splice(bestIdx,1);
+    displaced.player=sub;
+    displaced.autoAdjusted=true;
+    live.lastAdjust={team:displaced.teamId, pick:displaced.overallPick, from:newPlayer.name, to:sub.name};
+  } else {
+    live.lastAdjust=null;
+  }
+
+  live.pool.sort((a,b)=>b.base-a.base);
+  // recompute every team's counts + streak from the pick list (authoritative)
+  live.teams.forEach(t=>{ t.counts={}; t.lastPos=null; t.streak=0; });
+  live.picks.forEach(p=>{
+    const t=live.teams[p.teamId-1];
+    t.counts[p.player.pos]=(t.counts[p.player.pos]||0)+1;
+    if(p.player.pos===t.lastPos){ t.streak++; } else { t.lastPos=p.player.pos; t.streak=1; }
+  });
+  return true;
+}
+
+function updateLiveChaosNote(){
+  const el=document.getElementById('liveChaosNote');
+  if(!el) return;
+  const sel=document.getElementById('liveChaosMode');
+  if(sel && sel.value==='strict'){
+    el.innerHTML='<b style="color:var(--turf);">Randomness OFF</b> — AI teams take the best available player by strict rank (still respecting roster needs, position caps and bias). Every run of this draft will be identical.';
+  } else {
+    el.innerHTML='<b style="color:var(--gold);">Randomness ON</b> — AI teams vary picks by &plusmn;'+Math.round(state.chaos*100)+'% (your chaos slider on the Simulate tab). Teams will reach and let players fall, so each run differs.';
+  }
+}
+document.getElementById('liveChaosMode').addEventListener('change', ()=>{
+  updateLiveChaosNote();
+  liveSetStatus('Randomness setting changed — it applies to upcoming picks.');
+});
+
+function updateLiveSlotInfo(){
+  const el=document.getElementById('liveSlotInfo');
+  if(!el) return;
+  const n=state.numTeams, s=state.myTeam;
+  el.textContent='Pick '+s+' of '+n+' (then '+(2*n-s+1)+', '+(2*n+s)+'…)';
+}
+document.getElementById('liveTeamSel').addEventListener('change', e=>{
+  state.myTeam=+e.target.value;
+  document.getElementById('myTeamSel').value=state.myTeam;
+  updateLiveSlotInfo();
+  updateYouAreHint();
+  renderMyTeam(); renderAggregate(); renderBoard(); renderPredictor();
+  if(live){
+    liveInit();
+    liveRunUntilMe();
+    liveSetStatus('Switched to Team '+state.myTeam+' — draft restarted from scratch.');
+  }
+  renderLive();
+});
+
+function renderLive(){
+  updateLiveChaosNote();
+  const clockEl=document.getElementById('liveOnClock');
+  if(!live){
+    clockEl.innerHTML='<div class="empty">Click "Start / restart draft" to begin.</div>';
+    document.getElementById('liveMyRoster').innerHTML='<div class="empty">No picks yet.</div>';
+    document.getElementById('liveHistory').innerHTML='<div class="empty">No picks yet.</div>';
+    return;
+  }
+  const cur=liveCurrent();
+  const editing = live.editIdx!=null ? live.picks[live.editIdx] : null;
+  let html='';
+  if(editing){
+    html+='<div class="clock-banner"><div class="big">Editing pick '+editing.overallPick+'</div>'
+      +'<div class="meta">Round '+editing.round+' &middot; '+(editing.teamId===state.myTeam?'Your pick':'Team '+editing.teamId)
+      +' &middot; currently '+editing.player.name+' — choose a replacement below</div>'
+      +'<div style="margin-top:10px;"><button class="small" id="liveCancelEdit">Cancel edit</button></div></div>';
+  } else if(!cur){
+    html+='<div class="clock-banner ai"><div class="big">Draft complete</div><div class="meta">All '+liveTotalPicks()+' picks made — you can still edit any pick below</div></div>';
+  } else if(cur.teamId===state.myTeam){
+    html+='<div class="clock-banner"><div class="big">You are on the clock</div><div class="meta">Round '+cur.round+' &middot; pick '+cur.overallPick+' overall &middot; Team '+cur.teamId+'</div></div>';
+  } else {
+    html+='<div class="clock-banner ai"><div class="big">Team '+cur.teamId+' on the clock</div><div class="meta">Round '+cur.round+' &middot; pick '+cur.overallPick+' overall — advance above, or draft for them manually below</div></div>';
+  }
+  if(cur || editing){
+    html+='<div class="field-row" style="margin-bottom:10px;">'
+      +'<div class="field"><label>Search available</label><input type="text" id="liveSearch" placeholder="Player name..." value="'+(live.search||'')+'"></div>'
+      +'<div class="field"><label>Position</label><select id="livePosFilter">'
+      +['','QB','RB','WR','TE','K','DST'].map(p=>`<option value="${p}" ${live.posFilter===p?'selected':''}>${p||'All positions'}</option>`).join('')
+      +'</select></div></div>';
+    const s=(live.search||'').toLowerCase();
+    let candidates=live.pool.map(p=>({p, takenBy:null}));
+    if(editing){
+      live.picks.forEach(pk=>{
+        if(pk.overallPick!==editing.overallPick) candidates.push({p:pk.player, takenBy:pk.teamId});
+      });
+      candidates.sort((a,b)=>b.p.base-a.p.base);
+    }
+    let avail=candidates.filter(c=>{
+      if(live.posFilter && c.p.pos!==live.posFilter) return false;
+      if(s && !c.p.name.toLowerCase().includes(s)) return false;
+      return true;
+    }).slice(0,60);
+    html+='<div class="avail-scroll"><table><thead><tr><th>Rank</th><th>Player</th><th>Pos</th><th>NFL</th><th>Status</th><th></th></tr></thead><tbody>';
+    if(!avail.length){
+      html+='<tr><td colspan="6" class="empty">No players match.</td></tr>';
+    } else {
+      avail.forEach(c=>{
+        const p=c.p;
+        const status = c.takenBy==null ? '<span style="color:var(--turf);">Available</span>'
+          : '<span style="color:var(--gold);">Team '+c.takenBy+'</span>';
+        html+=`<tr><td>${p.rank}</td><td>${plink(p.name,p.pos,p.team)}${statusBadge(p.name)}</td><td><span class="pos-badge pos-${p.pos}">${p.pos}</span></td><td>${p.team}</td>`
+          +`<td>${status}</td>`
+          +`<td><button class="draft-btn primary" data-draft="${p.id}">${editing?'Select':'Draft'}</button></td></tr>`;
+      });
+    }
+    html+='</tbody></table></div>';
+    html+='<p class="hint">Showing the top 60 available players matching your filters. Click any name for stats.'
+      +(editing?' Picking here replaces the pick being edited.':(cur && cur.teamId!==state.myTeam?' You can draft on behalf of Team '+cur.teamId+' if you want to control their pick.':''))+'</p>';
+  }
+  clockEl.innerHTML=html;
+
+  const searchEl=document.getElementById('liveSearch');
+  if(searchEl){
+    searchEl.addEventListener('input', e=>{ live.search=e.target.value; renderLive();
+      const el=document.getElementById('liveSearch'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } });
+    document.getElementById('livePosFilter').addEventListener('change', e=>{ live.posFilter=e.target.value; renderLive(); });
+    clockEl.querySelectorAll('[data-draft]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        let p=live.pool.find(x=>x.id===btn.dataset.draft);
+        if(!p){ const pk=live.picks.find(x=>x.player.id===btn.dataset.draft); if(pk) p=pk.player; }
+        if(!p) return;
+        if(live.editIdx!=null){
+          const rec=live.picks[live.editIdx];
+          const oldName=rec.player.name;
+          if(liveReplacePick(live.editIdx, p)){
+            let msg='Pick '+rec.overallPick+' changed: '+oldName+' → '+p.name+'.';
+            if(live.lastAdjust) msg+=' Team '+live.lastAdjust.team+' lost '+live.lastAdjust.from+' at pick '+live.lastAdjust.pick+' and auto-drafted '+live.lastAdjust.to+' instead.';
+            liveSetStatus(msg);
+          } else {
+            liveSetStatus('Could not make that swap.');
+          }
+          live.editIdx=null;
+          renderLive();
+          return;
+        }
+        const who=liveCurrent();
+        const mine=who && who.teamId===state.myTeam;
+        liveCommit(p);
+        if(mine) liveRunUntilMe();
+        renderLive();
+        liveSetStatus(mine?('You drafted '+p.name+'.'):('Drafted '+p.name+' for Team '+who.teamId+'.'));
+      });
+    });
+    const cancelBtn=document.getElementById('liveCancelEdit');
+    if(cancelBtn) cancelBtn.addEventListener('click', ()=>{ live.editIdx=null; renderLive(); liveSetStatus('Edit cancelled.'); });
+  }
+
+  // my roster
+  const mine=live.picks.filter(p=>p.teamId===state.myTeam);
+  const rosterEl=document.getElementById('liveMyRoster');
+  if(!mine.length){
+    rosterEl.innerHTML='<div class="empty">No picks yet.</div>';
+  } else {
+    let rh='<table><thead><tr><th>Rd</th><th>Player</th><th>Pos</th><th>Pick</th></tr></thead><tbody>';
+    mine.forEach(p=>{
+      rh+=`<tr><td>${p.round}</td><td>${plink(p.player.name,p.player.pos,p.player.team)}${statusBadge(p.player.name)}</td><td><span class="pos-badge pos-${p.player.pos}">${p.player.pos}</span></td><td>${p.overallPick}</td></tr>`;
+    });
+    rh+='</tbody></table>';
+    const counts={};
+    mine.forEach(p=>counts[p.player.pos]=(counts[p.player.pos]||0)+1);
+    rh+='<p class="hint">'+POSITIONS.filter(x=>counts[x]).map(x=>x+': '+counts[x]).join(' &middot; ')+'</p>';
+    rosterEl.innerHTML=rh;
+  }
+
+  // history
+  const histEl=document.getElementById('liveHistory');
+  if(!live.picks.length){
+    histEl.innerHTML='<div class="empty">No picks yet.</div>';
+  } else {
+    let hh='<div class="hist-scroll"><table><thead><tr><th>Pick</th><th>Team</th><th>Player</th><th>Pos</th><th></th></tr></thead><tbody>';
+    let lastRound=0;
+    live.picks.slice().reverse().forEach((p,ri)=>{
+      const realIdx=live.picks.length-1-ri;
+      if(p.round!==lastRound){
+        hh+=`<tr class="rd-divider"><td colspan="5">ROUND ${p.round}</td></tr>`;
+        lastRound=p.round;
+      }
+      const me=p.teamId===state.myTeam;
+      hh+=`<tr class="${me?'hist-me':''}"><td>${p.overallPick}</td><td>${me?'<b>You</b>':'Team '+p.teamId}</td>`
+        +`<td>${plink(p.player.name,p.player.pos,p.player.team)}${statusBadge(p.player.name)}${p.edited?' <span class="hint" style="display:inline;color:var(--gold);">(edited)</span>':''}${p.autoAdjusted?' <span class="hint" style="display:inline;color:var(--accent);">(auto-adjusted)</span>':''}</td>`
+        +`<td><span class="pos-badge pos-${p.player.pos}">${p.player.pos}</span></td>`
+        +`<td><button class="small" data-editpick="${realIdx}">Edit</button></td></tr>`;
+    });
+    hh+='</tbody></table></div>';
+    hh+='<p class="hint">Edit any pick to swap in a different available player — useful for replaying a draft with a different outcome, or matching what actually happened in your real draft.</p>';
+    histEl.innerHTML=hh;
+    // handled by delegated listener below
+  }
+  renderLiveGrades();
+}
+
+function renderLiveGrades(){
+  const el=document.getElementById('liveGrades');
+  if(!el) return;
+  if(!live || !live.picks.length){
+    el.innerHTML='<div class="empty">Complete the draft to see grades for every team.</div>';
+    return;
+  }
+  const done = live.idx>=liveTotalPicks();
+  const teams=[];
+  for(let t=1;t<=live.numTeams;t++){
+    const players=live.picks.filter(p=>p.teamId===t).map(p=>({
+      name:p.player.name, pos:p.player.pos, rank:p.player.rank,
+      pts:projSeasonPoints(p.player.name,p.player.pos,p.player.rank)
+    }));
+    teams.push({id:t, players});
+  }
+  const evals=teams.map(team=>{
+    const {starters,bench}=optimalLineup(team.players, state.roster);
+    const starterPts=starters.reduce((s,p)=>s+p.pts,0);
+    const benchPts=bench.reduce((s,p)=>s+p.pts,0);
+    const strength=starterPts+0.12*benchPts;
+    const posPts={}; POSITIONS.forEach(p=>posPts[p]=0);
+    starters.forEach(p=>posPts[p.pos]+=p.pts);
+    bench.forEach(p=>posPts[p.pos]+=0.12*p.pts);
+    return {id:team.id, strength, posPts, n:team.players.length};
+  });
+  const strengths=evals.map(e=>e.strength);
+  const minS=Math.min(...strengths), maxS=Math.max(...strengths);
+  const span=Math.max(1,maxS-minS);
+  evals.forEach(e=>{ e.score=Math.round(62+35*(e.strength-minS)/span); });
+  const posStats={};
+  POSITIONS.forEach(pos=>{
+    const vals=evals.map(e=>e.posPts[pos]);
+    const mean=vals.reduce((s,x)=>s+x,0)/vals.length;
+    const sd=Math.sqrt(vals.reduce((s,x)=>s+(x-mean)*(x-mean),0)/vals.length)||1;
+    posStats[pos]={mean,sd};
+  });
+  evals.forEach(e=>{
+    e.posGrades={};
+    POSITIONS.forEach(pos=>{
+      const z=(e.posPts[pos]-posStats[pos].mean)/posStats[pos].sd;
+      e.posGrades[pos]=letterFromScore(Math.round(Math.max(55,Math.min(99,80+z*9))));
+    });
+  });
+  const weekly=evals.map(e=>e.strength/17);
+  const sim=simulateSeasons(weekly, 1000);
+  evals.forEach((e,i)=>{
+    const w=Math.round(sim.avgWins[i]);
+    e.record=w+'-'+(sim.regWeeks-w);
+    e.playoffPct=sim.playoffPct[i];
+    e.titlePct=sim.titlePct[i];
+  });
+  const me=evals.find(e=>e.id===state.myTeam);
+  const sorted=evals.slice().sort((a,b)=>b.score-a.score);
+  const myRank=sorted.findIndex(e=>e.id===state.myTeam)+1;
+
+  let html='';
+  if(!done){
+    html+='<p class="hint" style="color:var(--gold);">Draft in progress ('+live.picks.length+' of '+liveTotalPicks()+' picks) — grades are provisional and will change as rosters fill out.</p>';
+  }
+  if(me){
+    const letter=letterFromScore(me.score);
+    html+='<div class="clock-banner" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">'
+      +`<div><div class="big" style="font-size:46px;line-height:1;color:${gradeColor(letter)};">${letter}</div></div>`
+      +`<div><div class="big">${me.score}<span style="font-size:18px;color:var(--ink-dim);">/100</span></div>`
+      +`<div class="meta">Your draft — ranked ${myRank} of ${live.numTeams} &middot; projected ${me.record} &middot; playoffs ${me.playoffPct.toFixed(0)}% &middot; title ${me.titlePct.toFixed(0)}%</div></div>`
+      +'<div style="flex:1;min-width:220px;"><div class="meta" style="margin-bottom:4px;">Position grades</div><div>'
+      + POSITIONS.map(p=>`<span class="chip" style="margin:2px 4px 2px 0;"><b style="color:${gradeColor(me.posGrades[p])};">${me.posGrades[p]}</b> ${p}</span>`).join('')
+      +'</div></div></div>';
+  }
+  html+='<div style="overflow-x:auto;"><table><thead><tr><th>Rk</th><th>Team</th><th>Grade</th><th>Score</th><th>QB</th><th>RB</th><th>WR</th><th>TE</th><th>K</th><th>DST</th><th>Proj record</th><th>Playoffs</th><th>Title</th></tr></thead><tbody>';
+  sorted.forEach((e,i)=>{
+    const you=e.id===state.myTeam;
+    const letter=letterFromScore(e.score);
+    html+=`<tr class="${you?'mine-row':''}"><td>${i+1}</td><td>${you?'<b>Team '+e.id+' (YOU)</b>':'Team '+e.id}</td>`
+      +`<td><b style="color:${gradeColor(letter)};font-size:15px;">${letter}</b></td><td>${e.score}</td>`;
+    POSITIONS.forEach(pos=>{ html+=`<td style="color:${gradeColor(e.posGrades[pos])};">${e.posGrades[pos]}</td>`; });
+    html+=`<td>${e.record}</td><td>${e.playoffPct.toFixed(0)}%</td><td>${e.titlePct.toFixed(0)}%</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  html+='<p class="hint">Scores are relative to this league (best roster ~97, weakest ~62). Any injury or suspension statuses you set are factored into these projections. Records come from 1,000 simulated seasons.</p>';
+  el.innerHTML=html;
+}
+
+// Delegated so buttons keep working after every re-render.
+document.addEventListener('click', (e)=>{
+  const eb=e.target.closest('[data-editpick]');
+  if(eb && live){
+    live.editIdx=+eb.dataset.editpick;
+    live.search=''; live.posFilter='';
+    renderLive();
+    const rec=live.picks[live.editIdx];
+    liveSetStatus('Editing pick '+rec.overallPick+' ('+(rec.teamId===state.myTeam?'your pick':'Team '+rec.teamId)+') — pick a replacement in the panel above.');
+    const panel=document.getElementById('liveOnClock');
+    if(panel && panel.scrollIntoView) panel.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  const cb=e.target.closest('#liveCancelEdit');
+  if(cb && live){ live.editIdx=null; renderLive(); liveSetStatus('Edit cancelled.'); }
+});
+
 // ---------- Init ----------
+if(isPhone){
+  document.getElementById('viewGridBtn').classList.remove('active');
+  document.getElementById('viewCardsBtn').classList.add('active');
+}
 refreshTeamSelectors();
+refreshStatusDatalist();
+renderStatusList();
 renderLeagueBiasSliders();
 renderTeamBiasList();
 renderPool();
