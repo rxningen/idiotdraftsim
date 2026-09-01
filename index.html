@@ -519,6 +519,7 @@ tr.hist-me td{background:rgba(255,201,77,0.08);}
             <option value="IR">Injured reserve</option>
             <option value="SUS">Suspended</option>
             <option value="PUP">PUP / NFI</option>
+          <option value="EX">Commissioner exempt list</option>
           </select>
         </div>
         <div class="field" style="min-width:120px;flex:none;">
@@ -530,13 +531,13 @@ tr.hist-me td{background:rgba(255,201,77,0.08);}
       </div>
       <div class="status-msg" id="statusMsg"></div>
       <h3>Bulk update</h3>
-      <p class="hint" style="margin-top:-4px;">Paste one per line as <code>Player Name, STATUS</code> (STATUS = Q, D, O, IR, SUS, or PUP). Copy from any injury report.</p>
-      <textarea id="statusBulk" rows="4" placeholder="Christian McCaffrey, Q&#10;Rashee Rice, SUS&#10;Chris Godwin Jr., IR"></textarea>
+      <p class="hint" style="margin-top:-4px;">Paste one per line as <code>Player Name, STATUS</code> (STATUS = Q, D, O, IR, SUS, PUP, or EX for the commissioner&#39;s exempt list). Copy from any injury report.</p>
+      <textarea id="statusBulk" rows="4" placeholder="Christian McCaffrey, Q&#10;Josh Jacobs, EX&#10;Chris Godwin Jr., IR"></textarea>
       <div style="margin-top:8px;">
         <button id="statusBulkBtn">Import status list</button>
       </div>
       <h3>Auto-update from ESPN</h3>
-      <p class="hint" style="margin-top:-4px;">Pulls current injury designations straight from ESPN&#39;s public API (32 requests, one per NFL team). Runs in your browser &mdash; no account or key needed.</p>
+      <p class="hint" style="margin-top:-4px;">Pulls current injury designations straight from ESPN&#39;s public API (32 requests, one per NFL team). Runs in your browser &mdash; no account or key needed. <b>Note:</b> players on the commissioner&#39;s exempt list don&#39;t count against the 53-man roster, so they may not appear in this feed at all &mdash; set those manually with the <b>EX</b> status.</p>
       <div class="field" style="max-width:320px;">
         <label>Connection method</label>
         <select id="espnMode">
@@ -2160,7 +2161,8 @@ const STATUS_META = {
   'O':  {label:'Out',             mult:0.68, color:'var(--danger)'},
   'IR': {label:'Injured reserve', mult:0.25, color:'var(--danger)'},
   'SUS':{label:'Suspended',       mult:0.45, color:'var(--danger)'},
-  'PUP':{label:'PUP / NFI',       mult:0.55, color:'var(--danger)'}
+  'PUP':{label:'PUP / NFI',       mult:0.55, color:'var(--danger)'},
+  'EX': {label:'Commissioner exempt', mult:0.30, color:'var(--danger)'}
 };
 let playerStatus = {};   // normName -> code
 
@@ -2249,6 +2251,7 @@ document.getElementById('statusBulkBtn').addEventListener('click', ()=>{
 // Uses ESPN's public (undocumented) JSON API. Team roster payloads embed each
 // athlete's current injury designation, so 32 requests cover the league.
 const ESPN_STATUS_MAP = [
+  [/exempt|commissioner/i,             'EX'],
   [/injured reserve|^ir$/i,            'IR'],
   [/physically unable|^pup$|non.?football/i, 'PUP'],
   [/suspend/i,                          'SUS'],
