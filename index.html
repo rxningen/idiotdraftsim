@@ -491,6 +491,17 @@ tr.hist-me td{background:rgba(255,201,77,0.08);}
     </div>
 
     <div class="card">
+      <h2>Import picks from a real draft</h2>
+      <p class="hint" style="margin-top:-6px;">Paste a list of drafted players &mdash; one per line, in the order they were taken. Use <b>Copy drafted list</b> in the ESPN extension, or type them yourself. Picks are assigned to teams following the snake order, so the board rebuilds exactly as it happened and you land on the clock at the right spot.</p>
+      <textarea id="importPicks" rows="5" placeholder="Jahmyr Gibbs&#10;Bijan Robinson&#10;Ja'Marr Chase"></textarea>
+      <div style="margin-top:8px;">
+        <button class="primary" id="importPicksBtn">Import into live draft</button>
+        <button id="importPicksAppendBtn">Append to current draft</button>
+      </div>
+      <div class="status-msg" id="importPicksMsg"></div>
+    </div>
+
+    <div class="card">
       <h2>Pick history</h2>
       <div id="liveHistory"><div class="empty">No picks yet.</div></div>
     </div>
@@ -2877,6 +2888,66 @@ function renderLiveGrades(){
   html+='<p class="hint">Scores are relative to this league (best roster ~97, weakest ~62). Any injury or suspension statuses you set are factored into these projections. Records come from 1,000 simulated seasons.</p>';
   el.innerHTML=html;
 }
+
+// ---------- Import real draft picks ----------
+function parsePickList(text){
+  return text.split('\n')
+    .map(l=>l.trim())
+    .filter(l=>l && !l.startsWith('#'))          // ignore extension header lines
+    .map(l=>l.replace(/^\s*\d+[.):]\s*/,''))     // strip "1." / "12)" prefixes
+    .map(l=>l.split(/\s+[-–—]\s+|,/)[0].trim())  // strip trailing ", RB, DET" or " - RB"
+    .filter(Boolean);
+}
+
+function importPicks(append){
+  const msgEl=document.getElementById('importPicksMsg');
+  const raw=document.getElementById('importPicks').value;
+  const names=parsePickList(raw);
+  if(!names.length){ msgEl.classList.add('warn'); msgEl.textContent='Nothing to import — paste a list of player names first.'; return; }
+  msgEl.classList.remove('warn');
+
+  if(!append || !live) liveInit();
+
+  const notFound=[], alreadyGone=[];
+  let placed=0;
+  for(const nm of names){
+    if(!liveCurrent()){ break; }
+    const key=normName(nm);
+    const idx=live.pool.findIndex(p=>normName(p.name)===key);
+    if(idx<0){
+      // is it already drafted in this session, or just unknown?
+      if(live.picks.some(p=>normName(p.player.name)===key)) alreadyGone.push(nm);
+      else notFound.push(nm);
+      continue;
+    }
+    liveCommit(live.pool[idx]);
+    placed++;
+  }
+
+  // Deliberately do NOT auto-run the AI here — that would invent picks and block
+  // you from appending more real ones. The draft sits exactly where the list ended.
+  renderLive();
+
+  let msg='Imported '+placed+' pick'+(placed===1?'':'s')+'.';
+  const cur=liveCurrent();
+  if(cur){
+    if(cur.teamId===state.myTeam){
+      msg += ' You are on the clock at pick '+cur.overallPick+' (round '+cur.round+') — pick above.';
+    } else {
+      msg += ' Next up: Team '+cur.teamId+' at pick '+cur.overallPick+'. Paste more real picks to keep syncing, or use "Advance to my next pick" to let the AI fill in.';
+    }
+  } else {
+    msg += ' Draft is complete.';
+  }
+  if(alreadyGone.length) msg+=' Skipped (already drafted): '+alreadyGone.join(', ')+'.';
+  if(notFound.length){
+    msg+=' Not found in your rankings: '+notFound.join(', ')+'. Add them on the Player pool tab, or check spelling.';
+    msgEl.classList.add('warn');
+  }
+  msgEl.textContent=msg;
+}
+document.getElementById('importPicksBtn').addEventListener('click', ()=>importPicks(false));
+document.getElementById('importPicksAppendBtn').addEventListener('click', ()=>importPicks(true));
 
 // Delegated so buttons keep working after every re-render.
 document.addEventListener('click', (e)=>{
