@@ -492,8 +492,14 @@ tr.hist-me td{background:rgba(255,201,77,0.08);}
 
     <div class="card">
       <h2>Import picks from a real draft</h2>
-      <p class="hint" style="margin-top:-6px;">Paste a list of drafted players &mdash; one per line, in the order they were taken. Use <b>Copy drafted list</b> in the ESPN extension, or type them yourself. Picks are assigned to teams following the snake order, so the board rebuilds exactly as it happened and you land on the clock at the right spot.</p>
+      <p class="hint" style="margin-top:-6px;">Paste your roster from the ESPN extension (<b>Copy my roster &rarr; simulator</b>), or type names one per line. Lines under <code>## MY ROSTER</code> or prefixed <code>MY:</code> go straight onto your team; a plain list is assigned down the snake order instead. Abbreviated names like <code>L. Jackson</code> and <code>Seattle D/ST</code> are resolved automatically.</p>
       <textarea id="importPicks" rows="5" placeholder="Jahmyr Gibbs&#10;Bijan Robinson&#10;Ja'Marr Chase"></textarea>
+      <div class="field" style="margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="importFillOthers" checked style="width:auto;">
+          <span>When importing only my roster, let the AI fill the other teams (so grades and the board make sense)</span>
+        </label>
+      </div>
       <div style="margin-top:8px;">
         <button class="primary" id="importPicksBtn">Import into live draft</button>
         <button id="importPicksAppendBtn">Append to current draft</button>
@@ -925,7 +931,62 @@ const RAW = [
 ["Jake Moody","K","SF"],
 ["Jason Myers","K","SEA"],
 ["Spencer Shrader","K","IND"],
-["Cam Little","K","JAX"]
+["Cam Little","K","JAX"],
+["Hunter Henry","TE","NE"],
+["Juwan Johnson","TE","NO"],
+["Mike Gesicki","TE","CIN"],
+["Noah Fant","TE","SEA"],
+["Theo Johnson","TE","NYG"],
+["Elijah Arroyo","TE","SEA"],
+["Darnell Mooney","WR","ATL"],
+["Adam Thielen","WR","MIN"],
+["Rashod Bateman","WR","BAL"],
+["Marvin Mims Jr.","WR","DEN"],
+["DeMario Douglas","WR","NE"],
+["Tank Bigsby","RB","JAX"],
+["Ray Davis","RB","BUF"],
+["Braelon Allen","RB","NYJ"],
+["Trey Benson","RB","ARI"],
+["Audric Estime","RB","DEN"],
+["Will Shipley","RB","PHI"],
+["Isaac Guerendo","RB","SF"],
+["Harrison Mevis","K","JAX"],
+["T.J. Hockenson","TE","MIN"],
+["Pat Freiermuth","TE","PIT"],
+["Adonai Mitchell","WR","IND"],
+["Cade Otton","TE","TB"],
+["Jonnu Smith","TE","PIT"],
+["Dalton Schultz","TE","HOU"],
+["Ben Sinnott","TE","WSH"],
+["Michael Mayer","TE","LV"],
+["Calvin Austin III","WR","PIT"],
+["Xavier Legette","WR","CAR"],
+["Roman Wilson","WR","PIT"],
+["Troy Franklin","WR","DEN"],
+["DeAndre Hopkins","WR","BAL"],
+["Kendrick Bourne","WR","NE"],
+["Jaylen Wright","RB","MIA"],
+["Roschon Johnson","RB","CHI"],
+["Sean Tucker","RB","TB"],
+["Trey Sermon","RB","IND"],
+["Kareem Hunt","RB","KC"],
+["Michael Penix Jr.","QB","ATL"],
+["Anthony Richardson","QB","IND"],
+["Tua Tagovailoa","QB","MIA"],
+["C.J. Stroud","QB","HOU"],
+["Sam Darnold","QB","SEA"],
+["Geno Smith","QB","LV"],
+["Jerry Jeudy","WR","CLE"],
+["Marquise Brown","WR","KC"],
+["Elijah Moore","WR","BUF"],
+["Nick Chubb","RB","HOU"],
+["Austin Ekeler","RB","WSH"],
+["Justice Hill","RB","BAL"],
+["Tyler Conklin","TE","LAC"],
+["Noah Gray","TE","KC"],
+["AJ Barner","TE","SEA"],
+["Russell Wilson","QB","NYG"],
+["Aidan O'Connell","QB","LV"]
 ];
 function buildDefaultPool(){
   return RAW.map((r,i)=>({id:'p'+i, rank:i+1, name:r[0], pos:r[1], team:r[2]}));
@@ -2890,36 +2951,134 @@ function renderLiveGrades(){
 }
 
 // ---------- Import real draft picks ----------
+// Match a name that may be abbreviated the way ESPN shows rosters ("J. Hurts").
+function findPoolPlayer(raw){
+  const k=normName(raw);
+  let hit=state.players.find(p=>normName(p.name)===k);
+  if(hit) return hit;
+  const parts=k.split(' ').filter(Boolean);
+  if(parts.length>=2){
+    const ini=parts[0][0], last=parts[parts.length-1];
+    const cands=state.players.filter(p=>{
+      const pp=normName(p.name).split(' ').filter(Boolean);
+      return pp.length>=2 && pp[0][0]===ini && pp[pp.length-1]===last;
+    });
+    if(cands.length) return cands.sort((a,b)=>a.rank-b.rank)[0];
+  }
+  // Defenses: ESPN writes "Seattle D/ST", pool has "Seattle Defense".
+  // normName keeps the slash, so flatten punctuation before stripping the tag.
+  const flat=k.replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ').trim();
+  const dstKey=flat.replace(/\b(d st|dst|def|defense|defence)\b/g,'').replace(/\s+/g,' ').trim();
+  if(dstKey && dstKey!==flat){
+    hit=state.players.find(p=>p.pos==='DST' && normName(p.name).includes(dstKey));
+    if(hit) return hit;
+  }
+  // last resort: any DST whose city/name overlaps
+  if(flat){
+    hit=state.players.find(p=>p.pos==='DST' && normName(p.name).replace(/\s*defense$/,'')===dstKey);
+    if(hit) return hit;
+  }
+  return null;
+}
+
+// Returns {roster:[names], all:[names]} — "MY:" lines are your own picks.
 function parsePickList(text){
-  return text.split('\n')
-    .map(l=>l.trim())
-    .filter(l=>l && !l.startsWith('#'))          // ignore extension header lines
-    .map(l=>l.replace(/^\s*\d+[.):]\s*/,''))     // strip "1." / "12)" prefixes
-    .map(l=>l.split(/\s+[-–—]\s+|,/)[0].trim())  // strip trailing ", RB, DET" or " - RB"
-    .filter(Boolean);
+  const roster=[], all=[];
+  let section='all';
+  text.split('\n').forEach(line=>{
+    let l=line.trim();
+    if(!l) return;
+    if(/^##\s*MY ROSTER/i.test(l)){ section='roster'; return; }
+    if(/^##\s*ALL DRAFTED/i.test(l)){
+      // If the exporter flagged the order as untrustworthy, ignore the section
+      // entirely — importing it would build a fake board.
+      section = /ORDER UNKNOWN|do not trust/i.test(l) ? 'skip' : 'all';
+      return;
+    }
+    if(l.startsWith('#')) return;
+    l=l.replace(/\s*#.*$/,'').trim();                 // trailing comments
+    let isMine=false;
+    if(/^MY:\s*/i.test(l)){ isMine=true; l=l.replace(/^MY:\s*/i,''); }
+    l=l.replace(/^\s*\d+[.):]\s*/,'');                // "1." / "12)"
+    l=l.replace(/^(QB|RB|WR|TE|FLEX|D\/ST|DST|K|BE|BN|IR)\s+/i,''); // leading pos col
+    l=l.split(/\s+[-–—]\s+|,/)[0].trim();             // ", RB, DET" / " - WR"
+    l=l.replace(/\s*\([A-Z/]{1,4}\)\s*$/,'').trim();  // "(WR)" annotation
+    if(!l) return;
+    if(section==='skip') return;
+    if(isMine||section==='roster') roster.push(l); else all.push(l);
+  });
+  return {roster, all};
 }
 
 function importPicks(append){
   const msgEl=document.getElementById('importPicksMsg');
   const raw=document.getElementById('importPicks').value;
-  const names=parsePickList(raw);
-  if(!names.length){ msgEl.classList.add('warn'); msgEl.textContent='Nothing to import — paste a list of player names first.'; return; }
+  const parsed=parsePickList(raw);
+  const names=parsed.all;
+  if(!parsed.roster.length && !names.length){ msgEl.classList.add('warn'); msgEl.textContent='Nothing to import — paste a list of player names first.'; return; }
   msgEl.classList.remove('warn');
 
   if(!append || !live) liveInit();
 
   const notFound=[], alreadyGone=[];
   let placed=0;
+
+  // Roster mode: your players belong in YOUR snake slots, with the AI filling
+  // every other slot around them. Reserve your players first so no AI team can
+  // take them, then walk the draft in order.
+  if(parsed.roster.length){
+    const mine=[];
+    parsed.roster.forEach(nm=>{
+      const pl=findPoolPlayer(nm);
+      if(!pl){ notFound.push(nm); return; }
+      if(mine.some(m=>m.id===pl.id)){ return; }
+      const idx=live.pool.findIndex(p=>p.id===pl.id);
+      if(idx<0){ alreadyGone.push(nm); return; }
+      mine.push(live.pool[idx]);
+    });
+    // ESPN's roster panel lists players by POSITION SLOT (QB, RB, RB, WR... then
+    // bench), not by when they were drafted. Seating them in that order would
+    // label the wrong player "round 1". Sorting by ranking is a far better proxy
+    // for real draft order.
+    mine.sort((a,b)=>a.rank-b.rank);
+    // pull them out of the pool so AI teams can't draft them
+    mine.forEach(pl=>{
+      const i=live.pool.findIndex(p=>p.id===pl.id);
+      if(i>=0) live.pool.splice(i,1);
+    });
+
+    const fillOthers=document.getElementById('importFillOthers').checked;
+    let queue=mine.slice();
+    let guard=0;
+    while(liveCurrent() && guard++<600){
+      const cur=liveCurrent();
+      if(cur.teamId===state.myTeam){
+        if(!queue.length) break;           // your real picks are done
+        const player=queue.shift();
+        const team=live.teams[cur.teamId-1];
+        team.counts[player.pos]=(team.counts[player.pos]||0)+1;
+        const prevLast=team.lastPos, prevStreak=team.streak;
+        if(player.pos===team.lastPos){ team.streak++; } else { team.lastPos=player.pos; team.streak=1; }
+        live.picks.push({round:cur.round, overallPick:cur.overallPick, teamId:cur.teamId,
+                         player, manual:true, prevLast, prevStreak, fromImport:true});
+        live.idx++;
+        placed++;
+      } else {
+        if(!fillOthers && !queue.length) break;
+        liveAIPick();
+      }
+    }
+    // any imported players we couldn't seat (roster longer than rounds)
+    queue.forEach(p=>live.pool.push(p));
+    if(queue.length) live.pool.sort((a,b)=>b.base-a.base);
+  }
+
   for(const nm of names){
     if(!liveCurrent()){ break; }
-    const key=normName(nm);
-    const idx=live.pool.findIndex(p=>normName(p.name)===key);
-    if(idx<0){
-      // is it already drafted in this session, or just unknown?
-      if(live.picks.some(p=>normName(p.player.name)===key)) alreadyGone.push(nm);
-      else notFound.push(nm);
-      continue;
-    }
+    const pl=findPoolPlayer(nm);
+    if(!pl){ notFound.push(nm); continue; }
+    const idx=live.pool.findIndex(p=>p.id===pl.id);
+    if(idx<0){ alreadyGone.push(nm); continue; }
     liveCommit(live.pool[idx]);
     placed++;
   }
@@ -2928,7 +3087,11 @@ function importPicks(append){
   // you from appending more real ones. The draft sits exactly where the list ended.
   renderLive();
 
-  let msg='Imported '+placed+' pick'+(placed===1?'':'s')+'.';
+  let msg='Imported '+placed+' pick'+(placed===1?'':'s')
+    +(parsed.roster.length?' ('+parsed.roster.length+' assigned to your Team '+state.myTeam+')':'')+'.';
+  if(parsed.roster.length){
+    msg+=' Round numbers are ordered by ranking — ESPN lists a roster by position slot, not draft order, so exact rounds can\u2019t be recovered from it.';
+  }
   const cur=liveCurrent();
   if(cur){
     if(cur.teamId===state.myTeam){
