@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Draft Room Assistant — Install</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0f14; --panel:#12161d; --panel2:#181d26; --line:rgba(255,255,255,0.07); --line2:rgba(255,255,255,0.13);
+  --gold:#ffc94d; --turf:#3ecf8e; --ink:#e9edf3; --ink-dim:#8b95a3; --ink-faint:#5c6673;
+  --accent:#5b9dff; --danger:#e4737f;
+  --font-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --font-body:"Barlow",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"Spline Sans Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(1200px 500px at 50% -10%, rgba(91,157,255,0.07), transparent 60%), var(--bg);
+  color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.6; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:860px;margin:0 auto;padding:36px 24px 80px}
+.masthead{border-bottom:1px solid var(--line2);padding-bottom:22px;margin-bottom:28px}
+.masthead h1{font-family:var(--font-display);font-size:44px;margin:0;letter-spacing:0.04em;text-transform:uppercase;font-weight:700;line-height:1}
+.masthead h1 span{color:var(--accent)}
+.masthead .sub{color:var(--ink-dim);font-size:13.5px;letter-spacing:0.14em;text-transform:uppercase;margin-top:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px 28px;margin-bottom:22px}
+.card h2{font-family:var(--font-display);font-size:15px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink);margin:0 0 18px;font-weight:600;padding-left:12px;border-left:3px solid var(--accent);line-height:1.2}
+a{color:var(--accent)}
+.btn{
+  display:inline-block;background:var(--accent);border:1px solid var(--accent);color:#0a0e14;
+  border-radius:8px;padding:14px 26px;font-family:var(--font-display);font-size:16px;font-weight:600;
+  letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;
+}
+.btn:hover{background:#79b1ff}
+.btn.ghost{background:none;color:var(--ink);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+ol.steps li{counter-increment:s;position:relative;padding:0 0 20px 46px;border-left:1px solid var(--line);margin-left:14px}
+ol.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+ol.steps li::before{
+  content:counter(s);position:absolute;left:-15px;top:-2px;width:30px;height:30px;border-radius:50%;
+  background:var(--panel2);border:1px solid var(--line2);color:var(--accent);
+  font-family:var(--font-mono);font-size:13px;display:flex;align-items:center;justify-content:center;
+}
+ol.steps b{display:block;font-size:16px;margin-bottom:2px}
+ol.steps p{margin:0;color:var(--ink-dim);font-size:14.5px}
+code{background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:2px 7px;font-family:var(--font-mono);font-size:13.5px;color:var(--gold)}
+.note{background:rgba(255,201,77,0.06);border:1px solid rgba(255,201,77,0.22);border-radius:10px;padding:14px 18px;font-size:14.5px;color:var(--ink-dim)}
+.note b{color:var(--gold)}
+.hint{color:var(--ink-faint);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
+th{text-align:left;color:var(--ink-faint);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;border-bottom:1px solid var(--line2)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.foot{text-align:center;color:var(--ink-faint);font-size:14px;margin-top:36px}
+@media (max-width:640px){
+  .wrap{padding:22px 14px 60px}
+  .masthead h1{font-size:32px}
+  .card{padding:18px 16px}
+  .btn{display:block;text-align:center}
+  .btn+.btn{margin-top:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <h1>Draft Room <span>Assistant</span></h1>
+    <div class="sub">Chrome extension &middot; reads your live ESPN draft</div>
+  </div>
+
+  <div class="card">
+    <h2>What it does</h2>
+    <p style="margin-top:0">Overlays a panel on your ESPN draft room showing the best players still available, ranked by your own half-PPR list. Reads your roster straight off the page so you can push it into the simulator in one paste.</p>
+    <p style="margin-bottom:0">
+      <a class="btn" href="espn-draft-assistant.zip" download>Download extension</a>
+      <a class="btn ghost" href="index.html">Open the simulator</a>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Install &mdash; about two minutes</h2>
+    <ol class="steps">
+      <li>
+        <b>Unzip it somewhere permanent</b>
+        <p>Chrome loads the extension from this folder every time it starts. If you delete or move it, the extension stops working. Documents or your home folder is fine &mdash; not Downloads if you clear that out.</p>
+      </li>
+      <li>
+        <b>Open <code>chrome://extensions</code></b>
+        <p>Paste that into the address bar. On Edge it's <code>edge://extensions</code>.</p>
+      </li>
+      <li>
+        <b>Turn on Developer mode</b>
+        <p>Toggle in the top-right corner of that page.</p>
+      </li>
+      <li>
+        <b>Click "Load unpacked" and pick the folder</b>
+        <p>Select the <code>espn-ext</code> folder you unzipped &mdash; the one containing <code>manifest.json</code>.</p>
+      </li>
+      <li>
+        <b>Open your ESPN draft room and reload it</b>
+        <p>The panel appears in the top-right. Extensions only attach on page load, so reload any draft tab you already had open.</p>
+      </li>
+      <li>
+        <b>Click "Set available list" once</b>
+        <p>Then click ESPN's list of available players. This teaches it where to read, and it's remembered from then on. Without it, the panel can't reliably tell who's been drafted.</p>
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Updating later</h2>
+    <p style="margin-top:0">Download the new zip, replace the folder's contents, then hit the <b>reload icon</b> on the extension's card at <code>chrome://extensions</code>. Chrome caches the old files otherwise &mdash; skipping the reload is the most common reason an update seems to do nothing.</p>
+  </div>
+
+  <div class="card">
+    <h2>Why isn't this one click?</h2>
+    <p style="margin-top:0">Chrome removed the ability for websites to install extensions directly back in 2018, and it blocks packaged <code>.crx</code> files downloaded from anywhere except its own store. Loading an unpacked folder is the supported route for extensions distributed outside the Web Store.</p>
+    <div class="note"><b>Want one-click?</b> Publishing to the Chrome Web Store gets you a real "Add to Chrome" button. It costs a one-time $5 developer registration and the listing goes through a review that usually takes a few days.</div>
+  </div>
+
+  <div class="card">
+    <h2>If something looks wrong</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>No panel at all</td><td>Reload the draft page. Confirm the URL starts with <code>fantasy.espn.com</code>.</td></tr>
+        <tr><td>"Can't tell who's available"</td><td>Click <b>Set available list</b>, then click ESPN's player list.</td></tr>
+        <tr><td>Lists players already drafted</td><td>The available list is pointing at the wrong element &mdash; run <b>Set available list</b> again.</td></tr>
+        <tr><td>Names show "not in rankings"</td><td>Add them in the simulator's Player pool tab, or use <b>Copy ESPN pool &rarr; rankings</b>.</td></tr>
+        <tr><td>An update changed nothing</td><td>Hit the reload icon on the extension card.</td></tr>
+      </tbody>
+    </table>
+    <p class="hint" style="margin-bottom:0">Still stuck? Click <b>Copy diagnostics</b> in the panel &mdash; it reports what the extension can actually see on the page, with your league IDs redacted.</p>
+  </div>
+
+  <div class="foot">Runs entirely in your browser. Nothing is uploaded anywhere.</div>
+
+</div>
+</body>
+</html>
